@@ -9,29 +9,33 @@ public class Bot : MonoBehaviour
     private int damageDealtToPlayer;
     private Vector3 botPosition;
 
-    private int[] genome = new int[] {1,10,30,48};
+    private int[] genome = new int[] {35,25,30,48};
     private int genomePositition = 0;
     private float genomeValue = 0;
 
     public float speed;
     public float distanceToWaypoint;
 
+    public LineRenderer lr;
+    public ParticleSystem ps;
+
     // Start is called before the first frame update
     void Start()
     {
         spawnTime = Time.fixedTime;
+
+        ps.Stop();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
 
         MoveBot(genome[genomePositition]);
 
     }
 
-    void MoveBot(int section)
+    private void MoveBot(int section)
     {
         Vector3 moveToPosition;
         moveToPosition = convertSection(section);
@@ -45,12 +49,43 @@ public class Bot : MonoBehaviour
 
     }
 
-    void damagePlayer()
+    private void StopBot()
+    {
+        speed = 0;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        if(collision.gameObject.tag == "planet")
+        {
+
+            //StopBot();
+            lr.enabled = true;
+            ps.Play();
+
+        }
+
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "planet")
+        {
+
+            //StopBot();
+            lr.enabled = false;
+            ps.Stop();
+
+        }
+    }
+
+    private void damagePlayer()
     {
         genomeValue += 1;
     }
 
-    void die()
+    private void die()
     {
         deathTime = Time.fixedTime;
 
@@ -58,7 +93,7 @@ public class Bot : MonoBehaviour
 
     }
 
-    Vector3 convertSection(int section)
+    private Vector3 convertSection(int section)
     {
         //Sections 1 to 48 converted into a position vector
         Vector3 position = new Vector3(0, 0, 0);

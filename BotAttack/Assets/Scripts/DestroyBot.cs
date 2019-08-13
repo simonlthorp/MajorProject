@@ -22,31 +22,35 @@ public class DestroyBot : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
 
-        Debug.Log("Collision Detected");
-        
-        if(explodePrefab != null)
+        //Debug.Log("Collision Detected");
+        if(collision.gameObject.tag == "bullet")
         {
-
-            GameObject explodeVFX = Instantiate(explodePrefab, this.transform.position, Quaternion.identity);
-            ParticleSystem psExplode = explodeVFX.GetComponent<ParticleSystem>();
-
-            if (psExplode != null)
+            if (explodePrefab != null)
             {
-                Destroy(explodeVFX, psExplode.main.duration);
+
+                GameObject explodeVFX = Instantiate(explodePrefab, this.transform.position, Quaternion.identity);
+                ParticleSystem psExplode = explodeVFX.GetComponent<ParticleSystem>();
+
+                if (psExplode != null)
+                {
+                    Destroy(explodeVFX, psExplode.main.duration);
+                }
+                else
+                {
+                    ParticleSystem psChild = explodeVFX.transform.GetChild(0).GetComponent<ParticleSystem>();
+                    Destroy(explodeVFX, psChild.main.duration);
+                }
+
             }
             else
             {
-                ParticleSystem psChild = explodeVFX.transform.GetChild(0).GetComponent<ParticleSystem>();
-                Destroy(explodeVFX, psChild.main.duration);
+                Debug.Log("Explosion Particle System Not Assigned");
             }
 
-        }
-        else
-        {
-            Debug.Log("Explosion Particle System Not Assigned");
-        }
+            Destroy(gameObject);
 
-        Destroy(gameObject);
+        }
+        
 
     }
 

@@ -30,7 +30,7 @@ public class ProjectileMove : MonoBehaviour
             }
 
         }
-        Destroy(gameObject, 1.0f);
+        Destroy(gameObject, 3.0f); //Destroy the bullet after 3 seconds
     }
 
     // Update is called once per frame
@@ -50,29 +50,36 @@ public class ProjectileMove : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        speed = 0;
 
-        ContactPoint cp = collision.contacts[0];
-        Quaternion rot = Quaternion.FromToRotation(Vector3.up, cp.normal);
-        Vector3 pos = cp.point;
-
-        if(hitPrefab != null)
+        if(collision.gameObject.tag == "bot")
         {
-            GameObject hitVFX = Instantiate(hitPrefab, pos, rot);
-            ParticleSystem psHit = hitVFX.GetComponent<ParticleSystem>();
 
-            if (psHit != null)
+            speed = 0;
+
+            ContactPoint cp = collision.contacts[0];
+            Quaternion rot = Quaternion.FromToRotation(Vector3.up, cp.normal);
+            Vector3 pos = cp.point;
+
+            if (hitPrefab != null)
             {
-                Destroy(hitVFX, psHit.main.duration);
+                GameObject hitVFX = Instantiate(hitPrefab, pos, rot);
+                ParticleSystem psHit = hitVFX.GetComponent<ParticleSystem>();
+
+                if (psHit != null)
+                {
+                    Destroy(hitVFX, psHit.main.duration);
+                }
+                else
+                {
+                    ParticleSystem psChild = hitVFX.transform.GetChild(0).GetComponent<ParticleSystem>();
+                    Destroy(hitVFX, psChild.main.duration);
+                }
             }
-            else
-            {
-                ParticleSystem psChild = hitVFX.transform.GetChild(0).GetComponent<ParticleSystem>();
-                Destroy(hitVFX, psChild.main.duration);
-            }
+
+            Destroy(gameObject);
+
         }
-
-        Destroy(gameObject);
+        
     }
 
 }
