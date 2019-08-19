@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\Bot.cs" />
     <Compile Include="Assets\Scripts\DestroyBot.cs" />
     <Compile Include="Assets\Scripts\faceMouse.cs" />
+    <Compile Include="Assets\Scripts\Game.cs" />
     <Compile Include="Assets\Scripts\Laser.cs" />
     <Compile Include="Assets\Scripts\ObjectRotator.cs" />
     <Compile Include="Assets\Scripts\ProjectileMove.cs" />
@@ -83,6 +84,12 @@
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.RenderPipelines.Lightweight.Runtime">
+      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.RenderPipelines.Lightweight.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Lightweight.Editor">
+      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.RenderPipelines.Lightweight.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
@@ -92,8 +99,14 @@
     <Reference Include="Unity.CollabProxy.Editor">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Postprocessing.Editor">
+      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.Postprocessing.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Postprocessing.Runtime">
+      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ShaderGraph.Editor">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.ShaderGraph.Editor.dll</HintPath>
@@ -106,18 +119,6 @@
     </Reference>
     <Reference Include="Unity.Analytics.DataPrivacy">
       <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.Analytics.DataPrivacy.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Lightweight.Runtime">
-      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.RenderPipelines.Lightweight.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RenderPipelines.Lightweight.Editor">
-      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.RenderPipelines.Lightweight.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Postprocessing.Editor">
-      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.Postprocessing.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Postprocessing.Runtime">
-      <HintPath>C:/Users/simon/Documents/Git/MajorProject/BotAttack/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.1.4f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

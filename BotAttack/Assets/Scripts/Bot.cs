@@ -9,19 +9,41 @@ public class Bot : MonoBehaviour
     private int damageDealtToPlayer;
     private Vector3 botPosition;
 
-    private int[] genome = new int[] {35,25,30,48};
-    private int genomePositition = 0;
+    private int[] genome = new int[3];
+    public int genomePositition = 0;
     private float genomeValue = 0;
 
+    //Movement Variables
     public float speed;
     public float distanceToWaypoint;
+    public bool escaping = false;
+    public Vector3 closestSpawn;
+    private bool foundClosest = false;
 
+    //Attack Particle System
     public LineRenderer lr;
     public ParticleSystem ps;
+
+    //Spawn Points
+    public GameObject sp1;
+    public GameObject sp2;
+    public GameObject sp3;
+    public GameObject sp4;
 
     // Start is called before the first frame update
     void Start()
     {
+
+        sp1 = GameObject.Find("SpawnPoint01");
+        sp2 = GameObject.Find("SpawnPoint02");
+        sp3 = GameObject.Find("SpawnPoint03");
+        sp4 = GameObject.Find("SpawnPoint04");
+
+        for(int i = 0; i<genome.Length; ++i)
+        {
+            genome[i] = Random.Range(1, 48);
+        }
+
         spawnTime = Time.fixedTime;
 
         ps.Stop();
@@ -30,13 +52,26 @@ public class Bot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        MoveBot(genome[genomePositition]);
+        if (!escaping)
+        {
+            Debug.Log("Moving");
+            MoveBot(genome[genomePositition]);
+        }
+        else
+        {
+            if (!foundClosest)
+            {
+                findClosestSpawn();
+            }
+            BotEscape();
+        }
+        
 
     }
 
     private void MoveBot(int section)
     {
+
         Vector3 moveToPosition;
         moveToPosition = convertSection(section);
 
@@ -45,8 +80,46 @@ public class Bot : MonoBehaviour
             genomePositition++;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, moveToPosition, Time.deltaTime * speed);
+        //Bot has ended it's flightpath and now attempts escape
+        if(genomePositition >= genome.Length)
+        {
+            Debug.Log("Escaping");
+            escaping = true;
 
+        }
+
+        if (!escaping)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, moveToPosition, Time.deltaTime * speed);
+        }
+        
+
+    }
+
+    private Vector3 findClosestSpawn()
+    {
+        Vector3 closest = sp1.transform.position;
+
+        if(Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp2.transform.position))
+        {
+            closest = sp2.transform.position;
+        }
+
+        if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp3.transform.position))
+        {
+            closest = sp3.transform.position;
+        }
+
+        if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp4.transform.position))
+        {
+            closest = sp4.transform.position;
+        }
+
+        foundClosest = true;
+
+        closestSpawn = closest;
+
+        return closest;
     }
 
     private void StopBot()
@@ -57,12 +130,16 @@ public class Bot : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
 
+        //When colliding with planet:
+        //  - Play attack particle system
+        //  - Damage Player
         if(collision.gameObject.tag == "planet")
         {
-
-            //StopBot();
+            
             lr.enabled = true;
             ps.Play();
+
+            ///TODO - Damage player
 
         }
 
@@ -70,10 +147,12 @@ public class Bot : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
+
+        //When exiting collision with planet
+        //  - Stop attack particles systems
         if (collision.gameObject.tag == "planet")
         {
 
-            //StopBot();
             lr.enabled = false;
             ps.Stop();
 
@@ -294,4 +373,17 @@ public class Bot : MonoBehaviour
 
         return position;
     }
+
+    void BotEscape()
+    {
+        Debug.Log("Trying to escape to: " + closestSpawn.x + ", " + closestSpawn.y + ", " + closestSpawn.z);
+       
+        transform.position = Vector3.MoveTowards(transform.position, closestSpawn, Time.deltaTime * speed);
+
+        if (Vector3.Distance(closestSpawn, transform.position) < distanceToWaypoint)
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }
