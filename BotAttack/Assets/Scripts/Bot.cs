@@ -30,6 +30,12 @@ public class Bot : MonoBehaviour
     public GameObject sp3;
     public GameObject sp4;
 
+    private bool isDamaging = false;
+    private float elapsedTime;
+    private const float DAMAGE_INTERVAL = 0.3f;
+
+    private GameObject CoreGame;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,6 +44,8 @@ public class Bot : MonoBehaviour
         sp2 = GameObject.Find("SpawnPoint02");
         sp3 = GameObject.Find("SpawnPoint03");
         sp4 = GameObject.Find("SpawnPoint04");
+
+        CoreGame = GameObject.Find("CoreGame");
 
         for(int i = 0; i<genome.Length; ++i)
         {
@@ -54,7 +62,7 @@ public class Bot : MonoBehaviour
     {
         if (!escaping)
         {
-            Debug.Log("Moving");
+            //Debug.Log("Moving");
             MoveBot(genome[genomePositition]);
         }
         else
@@ -65,7 +73,13 @@ public class Bot : MonoBehaviour
             }
             BotEscape();
         }
-        
+
+        if (isDamaging)
+        {
+            damagePlayer();
+        }
+
+        elapsedTime += Time.deltaTime;
 
     }
 
@@ -83,7 +97,7 @@ public class Bot : MonoBehaviour
         //Bot has ended it's flightpath and now attempts escape
         if(genomePositition >= genome.Length)
         {
-            Debug.Log("Escaping");
+            //Debug.Log("Escaping");
             escaping = true;
 
         }
@@ -140,6 +154,7 @@ public class Bot : MonoBehaviour
             ps.Play();
 
             ///TODO - Damage player
+            isDamaging = true;
 
         }
 
@@ -156,11 +171,20 @@ public class Bot : MonoBehaviour
             lr.enabled = false;
             ps.Stop();
 
+            isDamaging = false;
+
         }
     }
 
     private void damagePlayer()
     {
+
+        if(elapsedTime >= DAMAGE_INTERVAL)
+        {
+            CoreGame.GetComponent<Game>().DamagePlayer();
+            elapsedTime = elapsedTime % DAMAGE_INTERVAL;
+        }
+        
         genomeValue += 1;
     }
 
