@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Laser.cs" />
     <Compile Include="Assets\Scripts\ObjectRotator.cs" />
     <Compile Include="Assets\Scripts\ProjectileMove.cs" />
+    <Compile Include="Assets\Scripts\Recorder.cs" />
     <Compile Include="Assets\Scripts\SpawnProjectiles.cs" />
     <Compile Include="Assets\SpaceSkies Free\Demo\Scripts\LookCamera.cs" />
     <Compile Include="Assets\SpaceSkies Free\Demo\Scripts\SkyboxChanger.cs" />
