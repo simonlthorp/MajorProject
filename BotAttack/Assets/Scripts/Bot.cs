@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Bot : MonoBehaviour
 {
+
+    public const int GENOME_SIZE = 10;
+
     private float spawnTime;
     private float deathTime;
     private int damageDealtToPlayer;
+    private float timeAlive;
+    private bool escaped;
     private Vector3 botPosition;
 
-    private int[] genome = new int[3];
+    private int[] genome = new int[GENOME_SIZE];
     public int genomePositition = 0;
-    private float genomeValue = 0;
 
     //Movement Variables
     public float speed;
@@ -23,6 +28,7 @@ public class Bot : MonoBehaviour
     //Attack Particle System
     public LineRenderer lr;
     public ParticleSystem ps;
+    public GameObject explodePrefab;
 
     //Spawn Points
     public GameObject sp1;
@@ -30,23 +36,52 @@ public class Bot : MonoBehaviour
     public GameObject sp3;
     public GameObject sp4;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    private GameObject spawnPoint;
+    private int spawnPointNumber;
+    private int waveNumber;
 
+    private BotData botData;
+
+    private bool isDamaging = false;
+    private float elapsedTime;
+    private const float DAMAGE_INTERVAL = 0.3f;
+
+    private GameObject CoreGame;
+
+    //Awake is called before start
+    private void Awake()
+    {
         sp1 = GameObject.Find("SpawnPoint01");
         sp2 = GameObject.Find("SpawnPoint02");
         sp3 = GameObject.Find("SpawnPoint03");
         sp4 = GameObject.Find("SpawnPoint04");
 
-        for(int i = 0; i<genome.Length; ++i)
-        {
-            genome[i] = Random.Range(1, 48);
-        }
+        CoreGame = GameObject.Find("CoreGame");
 
         spawnTime = Time.fixedTime;
 
+        spawnPoint = findClosestSpawn();
+
         ps.Stop();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+        //Set the bot's genome
+        if (CoreGame.GetComponent<Game>().isRandom() || CoreGame.GetComponent<Game>().GetWaveNumber() == 1)
+        {
+            for (int i = 0; i < genome.Length; ++i)
+            {
+                genome[i] = Random.Range(1, 48);
+            }
+        }
+        //else
+        //{
+        //    setGAGenome(CoreGame.GetComponent<Game>().GetWave(spawnPointNumber), 1 /* BOT NUMBER IN THE WAVE */);
+        //}
+        
     }
 
     // Update is called once per frame
@@ -54,18 +89,24 @@ public class Bot : MonoBehaviour
     {
         if (!escaping)
         {
-            Debug.Log("Moving");
+            //Debug.Log("Moving");
             MoveBot(genome[genomePositition]);
         }
         else
         {
             if (!foundClosest)
             {
-                findClosestSpawn();
+                findClosestSpawnPosition();
             }
             BotEscape();
         }
-        
+
+        if (isDamaging)
+        {
+            DamagePlayer();
+        }
+
+        elapsedTime += Time.deltaTime;
 
     }
 
@@ -83,7 +124,7 @@ public class Bot : MonoBehaviour
         //Bot has ended it's flightpath and now attempts escape
         if(genomePositition >= genome.Length)
         {
-            Debug.Log("Escaping");
+            //Debug.Log("Escaping");
             escaping = true;
 
         }
@@ -93,26 +134,29 @@ public class Bot : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, moveToPosition, Time.deltaTime * speed);
         }
         
-
     }
 
-    private Vector3 findClosestSpawn()
+    private Vector3 findClosestSpawnPosition()
     {
         Vector3 closest = sp1.transform.position;
+        spawnPointNumber = 1;
 
         if(Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp2.transform.position))
         {
             closest = sp2.transform.position;
+            spawnPointNumber = 2;
         }
 
         if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp3.transform.position))
         {
             closest = sp3.transform.position;
+            spawnPointNumber = 3;
         }
 
         if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp4.transform.position))
         {
             closest = sp4.transform.position;
+            spawnPointNumber = 4;
         }
 
         foundClosest = true;
@@ -120,6 +164,56 @@ public class Bot : MonoBehaviour
         closestSpawn = closest;
 
         return closest;
+    }
+
+    //private int findClosestSpawnNumber()
+    //{
+    //    int sp = 0;
+
+    //    Vector3 closest = sp1.transform.position;
+
+    //    if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp2.transform.position))
+    //    {
+    //        closest = sp2.transform.position;
+    //    }
+
+    //    if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp3.transform.position))
+    //    {
+    //        closest = sp3.transform.position;
+    //    }
+
+    //    if (Vector3.Distance(transform.position, closest) > Vector3.Distance(transform.position, sp4.transform.position))
+    //    {
+    //        closest = sp4.transform.position;
+    //    }
+
+    //    return sp;
+    //}
+
+    private GameObject findClosestSpawn()
+    {
+        GameObject closestSpawn = sp1;
+        spawnPointNumber = 1;
+
+        if (Vector3.Distance(transform.position, closestSpawn.transform.position) > Vector3.Distance(transform.position, sp2.transform.position))
+        {
+            closestSpawn = sp2;
+            spawnPointNumber = 2;
+        }
+
+        if (Vector3.Distance(transform.position, closestSpawn.transform.position) > Vector3.Distance(transform.position, sp3.transform.position))
+        {
+            closestSpawn = sp3;
+            spawnPointNumber = 3;
+        }
+
+        if (Vector3.Distance(transform.position, closestSpawn.transform.position) > Vector3.Distance(transform.position, sp4.transform.position))
+        {
+            closestSpawn = sp4;
+            spawnPointNumber = 4;
+        }
+
+        return closestSpawn;
     }
 
     private void StopBot()
@@ -138,8 +232,42 @@ public class Bot : MonoBehaviour
             
             lr.enabled = true;
             ps.Play();
+            
+            isDamaging = true;
 
-            ///TODO - Damage player
+        }
+
+        /*
+         * When colliding with bullet:
+         *      - Play explosion VFX
+         *      - Kill the bot with the Die() function
+         */
+        if (collision.gameObject.tag == "bullet")
+        {
+            if (explodePrefab != null)
+            {
+
+                GameObject explodeVFX = Instantiate(explodePrefab, this.transform.position, Quaternion.identity);
+                ParticleSystem psExplode = explodeVFX.GetComponent<ParticleSystem>();
+
+                if (psExplode != null)
+                {
+                    Destroy(explodeVFX, psExplode.main.duration);
+                }
+                else
+                {
+                    ParticleSystem psChild = explodeVFX.transform.GetChild(0).GetComponent<ParticleSystem>();
+                    Destroy(explodeVFX, psChild.main.duration);
+                }
+
+            }
+            else
+            {
+                Debug.Log("Explosion Particle System Not Assigned");
+            }
+
+            Die();
+            //Destroy(gameObject);
 
         }
 
@@ -156,22 +284,71 @@ public class Bot : MonoBehaviour
             lr.enabled = false;
             ps.Stop();
 
+            isDamaging = false;
+
         }
     }
 
-    private void damagePlayer()
+    /*
+     * DamagePlayer - Deals damage to the player in time increments equal to DAMAGE_INTERVAL
+     *      - Updates the game UI
+     *      - increment the damageDealtToPlayer variable
+     */
+    private void DamagePlayer()
     {
-        genomeValue += 1;
+
+        if(elapsedTime >= DAMAGE_INTERVAL)
+        {
+            CoreGame.GetComponent<Game>().DamagePlayer();
+            ++damageDealtToPlayer;
+            elapsedTime = elapsedTime % DAMAGE_INTERVAL;
+        }
+
     }
 
-    private void die()
+    /*
+     * Die - Kills the bot
+     *      - Sets the time alive variable
+     *      - Destroy the bot
+     */
+    private void Die()
     {
         deathTime = Time.fixedTime;
 
-        genomeValue += deathTime - spawnTime;
+        timeAlive = deathTime - spawnTime;
+
+        CoreGame.GetComponent<Game>().DecrementNumberOfBots();
+
+        botData = new BotData(CoreGame.GetComponent<GeneticAlgorithm>().FitnessFunction(this), genome);
+
+        if(spawnPointNumber == 1)
+        {
+            CoreGame.GetComponent<GeneticAlgorithm>().botListSP1.Add(botData);
+        }
+
+        if (spawnPointNumber == 2)
+        {
+            CoreGame.GetComponent<GeneticAlgorithm>().botListSP2.Add(botData);
+        }
+
+        if (spawnPointNumber == 3)
+        {
+            CoreGame.GetComponent<GeneticAlgorithm>().botListSP3.Add(botData);
+        }
+
+        if (spawnPointNumber == 4)
+        {
+            CoreGame.GetComponent<GeneticAlgorithm>().botListSP4.Add(botData);
+        }
+
+        Destroy(gameObject);
 
     }
 
+    /*
+     * convertSection - Converts one of 48 sections of the screen to game coordinates
+     * eg: input int 1 returns Vector3(-35,25,0)
+     */
     private Vector3 convertSection(int section)
     {
         //Sections 1 to 48 converted into a position vector
@@ -374,16 +551,52 @@ public class Bot : MonoBehaviour
         return position;
     }
 
+    /*
+     * BotEscape - Moves the bot towards the closest spawn point
+     * Once arriving at the spawn point:
+     *      sets escaped to true
+     *      calls the die function
+     */
     void BotEscape()
     {
-        Debug.Log("Trying to escape to: " + closestSpawn.x + ", " + closestSpawn.y + ", " + closestSpawn.z);
+        //Debug.Log("Trying to escape to: " + closestSpawn.x + ", " + closestSpawn.y + ", " + closestSpawn.z);
        
         transform.position = Vector3.MoveTowards(transform.position, closestSpawn, Time.deltaTime * speed);
 
         if (Vector3.Distance(closestSpawn, transform.position) < distanceToWaypoint)
         {
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    public void setGAGenome(List<BotData> botDataList, int botNumber)
+    {
+
+        for (int i = 0; i < GENOME_SIZE; ++i)
+        {
+            genome[i] = botDataList.ElementAt(botNumber).getGenomeElement(i);
+        }
+
+    }
+
+    public int getDamageDealt()
+    {
+        return damageDealtToPlayer;
+    }
+
+    public float getTimeAlive()
+    {
+        return timeAlive;
+    }
+
+    public bool isEscaped()
+    {
+        return escaped;
+    }
+
+    public void setWaveNumber(int wave)
+    {
+        waveNumber = wave;
     }
 
 }

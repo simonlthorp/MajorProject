@@ -4934,7 +4934,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 280695255318192876}
-  - component: {fileID: 280695255318192877}
   - component: {fileID: 280695255318192879}
   - component: {fileID: 280695255318192878}
   - component: {fileID: 280695255318192864}
@@ -4962,20 +4961,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &280695255318192877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 280695255318192875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e36243a1fb7e54049a0f3f162b08c288, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explodePrefab: {fileID: 6616069031266834130, guid: 7b89bfd7ff8b3214787d00fbff7ba142,
-    type: 3}
 --- !u!54 &280695255318192879
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5021,8 +5006,11 @@ MonoBehaviour:
   speed: 10
   distanceToWaypoint: 0.5
   escaping: 0
+  closestSpawn: {x: 0, y: 0, z: 0}
   lr: {fileID: 280695253497350474}
   ps: {fileID: 280695253554617648}
+  explodePrefab: {fileID: 6616069031266834130, guid: 7b89bfd7ff8b3214787d00fbff7ba142,
+    type: 3}
   sp1: {fileID: 0}
   sp2: {fileID: 0}
   sp3: {fileID: 0}

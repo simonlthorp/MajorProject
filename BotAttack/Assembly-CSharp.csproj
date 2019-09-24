@@ -63,12 +63,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Bot.cs" />
+    <Compile Include="Assets\Scripts\DamageText.cs" />
     <Compile Include="Assets\Scripts\DestroyBot.cs" />
     <Compile Include="Assets\Scripts\faceMouse.cs" />
     <Compile Include="Assets\Scripts\Game.cs" />
+    <Compile Include="Assets\Scripts\GeneticAlgorithm.cs" />
     <Compile Include="Assets\Scripts\Laser.cs" />
     <Compile Include="Assets\Scripts\ObjectRotator.cs" />
     <Compile Include="Assets\Scripts\ProjectileMove.cs" />
+    <Compile Include="Assets\Scripts\Recorder.cs" />
     <Compile Include="Assets\Scripts\SpawnProjectiles.cs" />
     <Compile Include="Assets\SpaceSkies Free\Demo\Scripts\LookCamera.cs" />
     <Compile Include="Assets\SpaceSkies Free\Demo\Scripts\SkyboxChanger.cs" />
