@@ -35,9 +35,7 @@ public class Recorder : MonoBehaviour
 
     public void recordBot(string wave, int botNumber, int damageDealt, int timeAlive)
     {
-
         botWriter.WriteLine(wave + "," + botNumber + "," + damageDealt + "," + timeAlive);
-        
     }
 
     public void recordWave(string wave, int damageDealt, int enemiesKilled, int waveTime)

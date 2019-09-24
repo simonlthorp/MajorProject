@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\DestroyBot.cs" />
     <Compile Include="Assets\Scripts\faceMouse.cs" />
     <Compile Include="Assets\Scripts\Game.cs" />
+    <Compile Include="Assets\Scripts\GeneticAlgorithm.cs" />
     <Compile Include="Assets\Scripts\Laser.cs" />
     <Compile Include="Assets\Scripts\ObjectRotator.cs" />
     <Compile Include="Assets\Scripts\ProjectileMove.cs" />

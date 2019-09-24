@@ -2430,6 +2430,7 @@ GameObject:
   - component: {fileID: 614144909}
   - component: {fileID: 614144908}
   - component: {fileID: 614144910}
+  - component: {fileID: 614144911}
   m_Layer: 0
   m_Name: CoreGame
   m_TagString: Untagged
@@ -2449,6 +2450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36a31ebd3765bd94ba9d5159769edb6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RANDOM: 0
   sp1: {fileID: 1682657737}
   sp2: {fileID: 1077349529}
   sp3: {fileID: 971145631}
@@ -2481,6 +2483,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fc8090fafbc8d243adca7a44cf46087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &614144911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614144907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521be609137d26f4d9b8aa379ce1df37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  population: 10
+  numberOfGenes: 10
+  damageMultiplier: 3
+  timeMultiplier: 1
+  escapeMultiplier: 1
 --- !u!1 &634997277
 GameObject:
   m_ObjectHideFlags: 0
