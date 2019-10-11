@@ -7,24 +7,34 @@ public class Game : MonoBehaviour
 {
 
     [SerializeField] private bool RANDOM = true;
+    private bool EndGame = false;
     private const int NUMBER_OF_CHILDREN = 2;
+    private const int TOTAL_WAVES = 20;
 
     public GameObject sp1;
     public GameObject sp2;
     public GameObject sp3;
     public GameObject sp4;
     public GameObject bot;
+    public GameObject WaveText;
+    public GameObject GameOverText;
 
     private List<BotData> sp1Wave = new List<BotData>();
     private List<BotData> sp2Wave = new List<BotData>();
     private List<BotData> sp3Wave = new List<BotData>();
     private List<BotData> sp4Wave = new List<BotData>();
 
+    private BotData eliteSP1;
+    private BotData eliteSP2;
+    private BotData eliteSP3;
+    private BotData eliteSP4;
+
     private int waveNumber = 1;
 
     private int damageTaken = 0;
+    private int botsKilled = 0;
 
-    public const int WAVE_SIZE = 2;
+    public const int WAVE_SIZE = 10;
     [SerializeField] private float spawnDelay;
 
     //Bot spawning numbers
@@ -47,6 +57,8 @@ public class Game : MonoBehaviour
     {
         numberOfBots = WAVE_SIZE * 4;
 
+        PlayWaveText();
+
         SpawnWave(sp1);
         SpawnWave(sp2);
         SpawnWave(sp3);
@@ -57,9 +69,18 @@ public class Game : MonoBehaviour
     void Update()
     {
         
-        if(numberOfBots <= 0)
+        if(numberOfBots <= 0 && waveNumber < TOTAL_WAVES)
         {
             NewWave();
+        }
+        else if(numberOfBots <= 0 && waveNumber >= TOTAL_WAVES)
+        {
+            if (!EndGame)
+            {
+                Instantiate(GameOverText, new Vector3(0.0f, 0.0f, 0.0f), new Quaternion());
+                StartCoroutine("Quit");
+            }
+            EndGame = true;
         }
 
     }
@@ -68,6 +89,8 @@ public class Game : MonoBehaviour
     {
         ++waveNumber;
 
+        PlayWaveText();
+        
         sp1Bot = 0;
         sp2Bot = 0;
         sp3Bot = 0;
@@ -84,22 +107,23 @@ public class Game : MonoBehaviour
         else
         {
             numberOfBots = WAVE_SIZE * 4;
-            ///TODO - add bots to sp1Wave list
-            ///TODO - Fitness Function
+            
+            //Fitness Function
             //Done in Bot.Die();
 
-            ///TODO - Selection Function
+            //Selection Function
             UseSelectionFunction();
 
-            ///TODO - Recombination Function
+            //Recombination Function
             UseRecombinationFunction();
 
-            ///TODO - Mutation Function
+            //Mutation Function
             UseMutationFunction();
 
-            ///TODO - Elitism
+            //Elitism
+            AddEliteBots();
 
-            ///TODO - Spawn waves
+            //Spawn waves
             SpawnWave(sp1);
             SpawnWave(sp2);
             SpawnWave(sp3);
@@ -179,6 +203,24 @@ public class Game : MonoBehaviour
         sp4Wave = GA.MutationFunction(sp4Wave);
     }
 
+    //Adds elite bots to the beginning and the end of the wave
+    private void AddEliteBots()
+    {
+        GeneticAlgorithm GA = this.GetComponent<GeneticAlgorithm>();
+
+        sp1Wave.Insert(0, GA.eliteBots.ElementAt(0));
+        sp1Wave.Add(GA.eliteBots.ElementAt(0));
+
+        sp2Wave.Insert(0, GA.eliteBots.ElementAt(1));
+        sp2Wave.Add(GA.eliteBots.ElementAt(1));
+
+        sp3Wave.Insert(0, GA.eliteBots.ElementAt(2));
+        sp3Wave.Add(GA.eliteBots.ElementAt(2));
+
+        sp4Wave.Insert(0, GA.eliteBots.ElementAt(3));
+        sp4Wave.Add(GA.eliteBots.ElementAt(3));
+    }
+
     private void SpawnWave(GameObject spawnPoint)
     {
         
@@ -187,9 +229,10 @@ public class Game : MonoBehaviour
     }
 
     /*
-     * Spawnbot - Spawns bots at the supplied spawn point
+     * Spawnbot - Spawns bots a random distance from the supplied spawn point
      *      - repeats for amount of times specified by WAVE_SIZE
      *      - Delays for time specified by spawnDelay
+     *      - Creates a spawn position a random distance between -10 and 10 from the spawn point
      *      - Spawns a bot at the spawn spoint
      */
     IEnumerator SpawnBot(GameObject spawnPoint)
@@ -197,51 +240,51 @@ public class Game : MonoBehaviour
         for (int i = 0; i < WAVE_SIZE; ++i)
         {
             yield return new WaitForSeconds(spawnDelay);
-            
-            
-            
-            if(spawnPoint == sp1)
+            Vector3 pos = new Vector3(spawnPoint.transform.position.x + Random.Range(-10.0f, 10.0f), spawnPoint.transform.position.y + Random.Range(-5.0f, 5.0f), spawnPoint.transform.position.z);
+            GameObject b = Instantiate(bot, pos, spawnPoint.transform.rotation);
+
+            if (spawnPoint == sp1)
             {
-                GameObject b = Instantiate(bot, spawnPoint.transform.position, spawnPoint.transform.rotation);
 
                 if (!RANDOM && GetWaveNumber() > 1)
                 {
                     b.GetComponent<Bot>().setGAGenome(GetWave(1), sp1Bot);
                 }
-                
+
+                b.GetComponent<Bot>().setBotNumber(sp1Bot);
                 ++sp1Bot;
             }
             if (spawnPoint == sp2)
             {
-                GameObject b = Instantiate(bot, spawnPoint.transform.position, spawnPoint.transform.rotation);
 
                 if (!RANDOM && GetWaveNumber() > 1)
                 {
                     b.GetComponent<Bot>().setGAGenome(GetWave(2), sp2Bot);
                 }
 
+                b.GetComponent<Bot>().setBotNumber(sp2Bot);
                 ++sp2Bot;
             }
             if (spawnPoint == sp3)
             {
-                GameObject b = Instantiate(bot, spawnPoint.transform.position, spawnPoint.transform.rotation);
 
                 if (!RANDOM && GetWaveNumber() > 1)
                 {
                     b.GetComponent<Bot>().setGAGenome(GetWave(3), sp3Bot);
                 }
 
+                b.GetComponent<Bot>().setBotNumber(sp3Bot);
                 ++sp3Bot;
             }
             if (spawnPoint == sp4)
             {
-                GameObject b = Instantiate(bot, spawnPoint.transform.position, spawnPoint.transform.rotation);
 
                 if (!RANDOM && GetWaveNumber() > 1)
                 {
                     b.GetComponent<Bot>().setGAGenome(GetWave(4), sp4Bot);
                 }
 
+                b.GetComponent<Bot>().setBotNumber(sp4Bot);
                 ++sp4Bot;
             }
 
@@ -257,6 +300,16 @@ public class Game : MonoBehaviour
     public int getDamageTaken()
     {
         return damageTaken;
+    }
+
+    public void incrementBotsKilled()
+    {
+        ++botsKilled;
+    }
+
+    public int getBotsKilled()
+    {
+        return botsKilled;
     }
 
     //Reduce the number of bots left on the scene by 1
@@ -320,6 +373,18 @@ public class Game : MonoBehaviour
     public bool isRandom()
     {
         return RANDOM;
+    }
+
+    private void PlayWaveText()
+    {
+        GameObject t = Instantiate(WaveText, new Vector3(0.0f, 0.0f, 0.0f), new Quaternion());
+        Destroy(t, 0.85f);
+    }
+
+    IEnumerator Quit()
+    {
+        yield return new WaitForSeconds(5.0f);
+        Application.Quit();
     }
 
 }

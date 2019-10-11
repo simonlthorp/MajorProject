@@ -39,6 +39,7 @@ public class Bot : MonoBehaviour
     private GameObject spawnPoint;
     private int spawnPointNumber;
     private int waveNumber;
+    private int botNumber;
 
     private BotData botData;
 
@@ -313,6 +314,8 @@ public class Bot : MonoBehaviour
      */
     private void Die()
     {
+        Recorder recorder = GameObject.Find("CoreGame").GetComponent<Recorder>();
+
         deathTime = Time.fixedTime;
 
         timeAlive = deathTime - spawnTime;
@@ -321,7 +324,9 @@ public class Bot : MonoBehaviour
 
         botData = new BotData(CoreGame.GetComponent<GeneticAlgorithm>().FitnessFunction(this), genome);
 
-        if(spawnPointNumber == 1)
+        recorder.recordBot(CoreGame.GetComponent<Game>().GetWaveNumber(), spawnPointNumber, botNumber, damageDealtToPlayer, timeAlive);
+
+        if (spawnPointNumber == 1)
         {
             CoreGame.GetComponent<GeneticAlgorithm>().botListSP1.Add(botData);
         }
@@ -576,7 +581,7 @@ public class Bot : MonoBehaviour
         {
             genome[i] = botDataList.ElementAt(botNumber).getGenomeElement(i);
         }
-
+        //this.botNumber = botNumber;
     }
 
     public int getDamageDealt()
@@ -597,6 +602,11 @@ public class Bot : MonoBehaviour
     public void setWaveNumber(int wave)
     {
         waveNumber = wave;
+    }
+
+    public void setBotNumber(int botNumber)
+    {
+        this.botNumber = botNumber;
     }
 
 }

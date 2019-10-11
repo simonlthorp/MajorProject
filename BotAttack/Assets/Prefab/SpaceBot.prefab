@@ -5003,7 +5003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genomePositition: 0
-  speed: 10
+  speed: 15
   distanceToWaypoint: 0.5
   escaping: 0
   closestSpawn: {x: 0, y: 0, z: 0}

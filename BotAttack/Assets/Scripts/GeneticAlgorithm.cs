@@ -22,6 +22,12 @@ public class GeneticAlgorithm : MonoBehaviour
     public List<BotData> botListSP3 = new List<BotData>();
     public List<BotData> botListSP4 = new List<BotData>();
 
+    //Elite Bots
+    //  - Holds an elite bot for each wave
+    //  - Each wave's bot is held at the respective element spot (sp1wave is held in element 0, etc.)
+    //  - Must be cleared after use
+    public List<BotData> eliteBots = new List<BotData>();
+
     /*
      * Calculates the fitness value for the supplied bot
      *      Fitness Value is determined by:
@@ -68,12 +74,15 @@ public class GeneticAlgorithm : MonoBehaviour
         {
             fitnessSum += bot.getFitnessValue();
         }
-        
+        //float normalizedTotal = 0;
         //Normalize fitness values
-        foreach(BotData bot in botList)
+        foreach (BotData bot in botList)
         {
             bot.calcNormalizedFitnessValue(fitnessSum);
+            //normalizedTotal += bot.getNormalizedFitnessValue();
         }
+
+        //Debug.Log("Normalized Total: " + normalizedTotal);
 
         //Sort by normalized values
         sortedList = botList.OrderByDescending(o => o.getNormalizedFitnessValue()).ToList();
@@ -86,6 +95,9 @@ public class GeneticAlgorithm : MonoBehaviour
                 sortedList.ElementAt(i).calcCumulativeValue(sortedList.ElementAt(j).getNormalizedFitnessValue());
             }
         }
+
+        //Add the most fit bot to the eliteBots list
+        eliteBots.Add(sortedList.ElementAt(0));
 
         //Generate random number between 0 and 1
         float selector = Random.Range(0.0f, 1.0f);
@@ -178,7 +190,7 @@ public class GeneticAlgorithm : MonoBehaviour
      */
     public List<BotData> MutationFunction(List<BotData> botList)
     {
-        float mutationProbability = 0.1f;
+        float mutationProbability = 0.4f;
         List<BotData> mutatedBots = new List<BotData>();
 
         foreach(BotData bot in botList)
