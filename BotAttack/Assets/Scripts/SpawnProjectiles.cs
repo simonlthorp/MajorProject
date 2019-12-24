@@ -12,11 +12,13 @@ public class SpawnProjectiles : MonoBehaviour
 
     private GameObject effectToSpawn;
     private float timeToFire = 0;
+    private AudioSource shotSFX;
 
     // Start is called before the first frame update
     void Start()
     {
         effectToSpawn = vfx[0];
+        shotSFX = GameObject.Find("CoreGame").GetComponent<Game>().shotSFX;
     }
 
     // Update is called once per frame
@@ -26,8 +28,9 @@ public class SpawnProjectiles : MonoBehaviour
         if (Input.GetButton("Fire1") && Time.time >= timeToFire)
         {
             timeToFire = Time.time + 1 / effectToSpawn.GetComponent<ProjectileMove>().fireRate;
-            spawnVFX();
-            //Debug.Log("fire pressed");
+            spawnVFX(); //Spawns the projectile
+
+            shotSFX.Play();  //Plays the particle system 
         }
 
     }
@@ -40,14 +43,6 @@ public class SpawnProjectiles : MonoBehaviour
         {
             vfx = Instantiate(effectToSpawn, firePoint.transform.position, firePoint.transform.rotation);
             
-
-            if(faceMouse != null)
-            {
-                //vfx.transform.eulerAngles = new Vector3(00.0f, 00.0f, rotationObject.transform.rotation.z);
-                //vfx.transform.localRotation = faceMouse.getRotation();
-
-            }
-
         }
         else
         {

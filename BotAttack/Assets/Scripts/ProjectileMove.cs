@@ -55,10 +55,15 @@ public class ProjectileMove : MonoBehaviour
         {
 
             speed = 0;
+            GameObject CoreGame = GameObject.Find("CoreGame");
+            CoreGame.GetComponent<Game>().incrementBotsKilled();
 
             ContactPoint cp = collision.contacts[0];
             Quaternion rot = Quaternion.FromToRotation(Vector3.up, cp.normal);
             Vector3 pos = cp.point;
+
+            AudioSource explosionSFX = CoreGame.GetComponent<Game>().explosionSFX;
+            explosionSFX.Play();
 
             if (hitPrefab != null)
             {

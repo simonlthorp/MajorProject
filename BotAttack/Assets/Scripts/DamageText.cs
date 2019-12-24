@@ -18,7 +18,7 @@ public class DamageText : MonoBehaviour{
     void Update()
     {
 
-        damageText.text = "DAMAGE: " + coreGame.GetComponent<Game>().getDamageTaken();
+        damageText.text = "DAMAGE TAKEN: " + coreGame.GetComponent<Game>().getDamageTaken();
 
     }
 }
