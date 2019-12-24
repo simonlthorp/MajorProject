@@ -2,6 +2,7 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - Bot
+    - BotsKilledText
     - DamageText
     - Game
     - GameOverText
@@ -59,6 +60,10 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 96
       Script: {instanceID: 0}
     - Class: 104
@@ -84,21 +89,23 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 10798}
     - Class: 114
-      Script: {instanceID: 10868}
+      Script: {instanceID: 10822}
     - Class: 114
-      Script: {instanceID: 10960}
+      Script: {instanceID: 10870}
     - Class: 114
-      Script: {instanceID: 11016}
+      Script: {instanceID: 10962}
     - Class: 114
-      Script: {instanceID: 11118}
+      Script: {instanceID: 11018}
     - Class: 114
-      Script: {instanceID: 11478}
+      Script: {instanceID: 11120}
     - Class: 114
-      Script: {instanceID: 11640}
+      Script: {instanceID: 11480}
     - Class: 114
-      Script: {instanceID: 11706}
+      Script: {instanceID: 11642}
     - Class: 114
-      Script: {instanceID: 11838}
+      Script: {instanceID: 11708}
+    - Class: 114
+      Script: {instanceID: 11840}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 120
@@ -784,6 +791,12 @@ ScriptsOnlyBuild:
     className: GeneticAlgorithm
   - hash:
       serializedVersion: 2
+      Hash: c12f913bf624e1c790c654039307afb4
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BotsKilledText
+  - hash:
+      serializedVersion: 2
       Hash: f050e4ebd311386367bb1906f9218b01
     assemblyName: Unity.RenderPipelines.Lightweight.Runtime.dll
     namespaceName: UnityEngine.Rendering.LWRP
@@ -934,7 +947,7 @@ ScriptsOnlyBuild:
     className: TMP_StyleSheet
   - hash:
       serializedVersion: 2
-      Hash: 6d379a9a59b71509e2a64d703232445b
+      Hash: 88f5a8fd0db5d901a957ac788d802309
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Game
@@ -1001,4 +1014,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/MainScene.unity
-  playerPath: C:/Users/simon/Documents/Git/MajorProject/MajorProject/BotAttack.exe
+  playerPath: C:/Users/simon/Documents/Git/MajorProject/BotAttack-V2/BotAttack.exe

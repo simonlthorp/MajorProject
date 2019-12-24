@@ -9,7 +9,9 @@ public class Game : MonoBehaviour
     [SerializeField] private bool RANDOM = true;
     private bool EndGame = false;
     private const int NUMBER_OF_CHILDREN = 2;
-    private const int TOTAL_WAVES = 20;
+    private const int TOTAL_WAVES = 100;
+    public const int WAVE_SIZE = 10;
+    private const int NUMBER_OF_ELITES = 2;
 
     public GameObject sp1;
     public GameObject sp2;
@@ -18,6 +20,12 @@ public class Game : MonoBehaviour
     public GameObject bot;
     public GameObject WaveText;
     public GameObject GameOverText;
+
+    public AudioSource gameMusic;
+    public AudioSource explosionSFX;
+    public AudioSource shotSFX;
+    public AudioSource raySXF;
+    public AudioSource gameOverMusic;
 
     private List<BotData> sp1Wave = new List<BotData>();
     private List<BotData> sp2Wave = new List<BotData>();
@@ -34,7 +42,7 @@ public class Game : MonoBehaviour
     private int damageTaken = 0;
     private int botsKilled = 0;
 
-    public const int WAVE_SIZE = 10;
+    
     [SerializeField] private float spawnDelay;
 
     //Bot spawning numbers
@@ -55,7 +63,16 @@ public class Game : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        numberOfBots = WAVE_SIZE * 4;
+
+        if (RANDOM || waveNumber == 1)
+        {
+            numberOfBots = WAVE_SIZE * 4;
+        }
+        else
+        {
+            numberOfBots = (WAVE_SIZE * 4) + (NUMBER_OF_ELITES * 4);
+        }
+        
 
         PlayWaveText();
 
@@ -68,8 +85,8 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if(numberOfBots <= 0 && waveNumber < TOTAL_WAVES)
+
+        if (numberOfBots <= 0 && waveNumber < TOTAL_WAVES)
         {
             NewWave();
         }
@@ -78,6 +95,11 @@ public class Game : MonoBehaviour
             if (!EndGame)
             {
                 Instantiate(GameOverText, new Vector3(0.0f, 0.0f, 0.0f), new Quaternion());
+                gameMusic.Stop();
+                gameOverMusic.Play();
+                Recorder recorder = GameObject.Find("CoreGame").GetComponent<Recorder>();
+                //recorder.getBotWriter().Close();
+                recorder.getWaveWriter().Close();
                 StartCoroutine("Quit");
             }
             EndGame = true;
@@ -106,7 +128,7 @@ public class Game : MonoBehaviour
         }
         else
         {
-            numberOfBots = WAVE_SIZE * 4;
+            numberOfBots = (WAVE_SIZE * 4) + (NUMBER_OF_ELITES * 4);
             
             //Fitness Function
             //Done in Bot.Die();
@@ -128,6 +150,15 @@ public class Game : MonoBehaviour
             SpawnWave(sp2);
             SpawnWave(sp3);
             SpawnWave(sp4);
+
+            GeneticAlgorithm GA = this.GetComponent<GeneticAlgorithm>();
+
+            GA.botListSP1.Clear();
+            GA.botListSP2.Clear();
+            GA.botListSP3.Clear();
+            GA.botListSP4.Clear();
+            GA.eliteBots.Clear();
+
         }
         
     }
@@ -138,16 +169,16 @@ public class Game : MonoBehaviour
         GeneticAlgorithm GA = this.GetComponent<GeneticAlgorithm>();
 
         bots = GA.botListSP1;
-        parentsSP1 = GA.SelectionFunction(bots);
+        parentsSP1 = GA.SelectionFunction(bots, 1);
 
         bots = GA.botListSP2;
-        parentsSP2 = GA.SelectionFunction(bots);
+        parentsSP2 = GA.SelectionFunction(bots, 2);
 
         bots = GA.botListSP3;
-        parentsSP3 = GA.SelectionFunction(bots);
+        parentsSP3 = GA.SelectionFunction(bots, 3);
 
         bots = GA.botListSP4;
-        parentsSP4 = GA.SelectionFunction(bots);
+        parentsSP4 = GA.SelectionFunction(bots, 4);
 
     }
 
@@ -158,36 +189,40 @@ public class Game : MonoBehaviour
 
         for(int i = 0; i < WAVE_SIZE/2; ++i)
         {
-            children = GA.RecombinationFunction(parentsSP1);
+            
             for(int j = 0; j < NUMBER_OF_CHILDREN; ++j)
             {
+                children = GA.RecombinationFunction(parentsSP1);
                 sp1Wave.Add(children.ElementAt(j));
             }
         }
 
         for (int i = 0; i < WAVE_SIZE / 2; ++i)
         {
-            children = GA.RecombinationFunction(parentsSP2);
+            
             for (int j = 0; j < NUMBER_OF_CHILDREN; ++j)
             {
+                children = GA.RecombinationFunction(parentsSP2);
                 sp2Wave.Add(children.ElementAt(j));
             }
         }
 
         for (int i = 0; i < WAVE_SIZE / 2; ++i)
         {
-            children = GA.RecombinationFunction(parentsSP3);
+            
             for (int j = 0; j < NUMBER_OF_CHILDREN; ++j)
             {
+                children = GA.RecombinationFunction(parentsSP3);
                 sp3Wave.Add(children.ElementAt(j));
             }
         }
 
         for (int i = 0; i < WAVE_SIZE / 2; ++i)
         {
-            children = GA.RecombinationFunction(parentsSP4);
+            
             for (int j = 0; j < NUMBER_OF_CHILDREN; ++j)
             {
+                children = GA.RecombinationFunction(parentsSP4);
                 sp4Wave.Add(children.ElementAt(j));
             }
         }
@@ -224,7 +259,14 @@ public class Game : MonoBehaviour
     private void SpawnWave(GameObject spawnPoint)
     {
         
-        StartCoroutine(SpawnBot(spawnPoint));
+        if(RANDOM || waveNumber == 1)
+        {
+            StartCoroutine(SpawnBot(spawnPoint, 0)); //Spawn without added elites
+        }
+        else
+        {
+            StartCoroutine(SpawnBot(spawnPoint, NUMBER_OF_ELITES)); //Spawn with added elites
+        }
         
     }
 
@@ -235,12 +277,14 @@ public class Game : MonoBehaviour
      *      - Creates a spawn position a random distance between -10 and 10 from the spawn point
      *      - Spawns a bot at the spawn spoint
      */
-    IEnumerator SpawnBot(GameObject spawnPoint)
+    IEnumerator SpawnBot(GameObject spawnPoint, int numberOfElites)
     {
-        for (int i = 0; i < WAVE_SIZE; ++i)
+
+        for (int i = 0; i < WAVE_SIZE + numberOfElites; ++i)
         {
             yield return new WaitForSeconds(spawnDelay);
-            Vector3 pos = new Vector3(spawnPoint.transform.position.x + Random.Range(-10.0f, 10.0f), spawnPoint.transform.position.y + Random.Range(-5.0f, 5.0f), spawnPoint.transform.position.z);
+            //Vector3 pos = new Vector3(spawnPoint.transform.position.x + Random.Range(-10.0f, 10.0f), spawnPoint.transform.position.y + Random.Range(-5.0f, 5.0f), spawnPoint.transform.position.z);
+            Vector3 pos = new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y, spawnPoint.transform.position.z);
             GameObject b = Instantiate(bot, pos, spawnPoint.transform.rotation);
 
             if (spawnPoint == sp1)

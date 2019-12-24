@@ -62,6 +62,9 @@ public class ProjectileMove : MonoBehaviour
             Quaternion rot = Quaternion.FromToRotation(Vector3.up, cp.normal);
             Vector3 pos = cp.point;
 
+            AudioSource explosionSFX = CoreGame.GetComponent<Game>().explosionSFX;
+            explosionSFX.Play();
+
             if (hitPrefab != null)
             {
                 GameObject hitVFX = Instantiate(hitPrefab, pos, rot);

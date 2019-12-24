@@ -18,7 +18,7 @@ public class BotsKilledText : MonoBehaviour
     void Update()
     {
 
-        botsKilledText.text = "DAMAGE: " + coreGame.GetComponent<Game>().getBotsKilled();
+        botsKilledText.text = "BOTS KILLED: " + coreGame.GetComponent<Game>().getBotsKilled();
 
     }
 }
