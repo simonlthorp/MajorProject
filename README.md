@@ -1,4 +1,4 @@
-MajorProject - Bot Attack
+# MajorProject - Bot Attack
 
 Bot Attack was made with the Unity game engine as an experiment to see how viable it is to use a genetic algorithm as a means to move an enemy AI around the screen. This was a solo project so all aspects of this game, aside from the sound and music assets, were made by me.
 
